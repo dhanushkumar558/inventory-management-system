@@ -87,6 +87,34 @@ router.get('/requests', auth('admin'), async (req, res) => {
     );
     res.json(data.rows);
   });
+
+  // PATCH /items/:id — Update quantity (admin only)
+router.patch('/items/:id', auth('admin'), async (req, res) => {
+  const { quantity } = req.body;
+  const itemId = req.params.id;
+
+  try {
+    await db.query('UPDATE items SET quantity = $1 WHERE id = $2', [quantity, itemId]);
+    res.send('Item quantity updated');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating item');
+  }
+});
+
+// DELETE /items/:id — Delete item (admin only)
+router.delete('/items/:id', auth('admin'), async (req, res) => {
+  const itemId = req.params.id;
+
+  try {
+    await db.query('DELETE FROM items WHERE id = $1', [itemId]);
+    res.send('Item deleted');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error deleting item');
+  }
+});
+
   
 
 module.exports = router;

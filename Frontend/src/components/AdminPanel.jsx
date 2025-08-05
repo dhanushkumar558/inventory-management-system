@@ -7,6 +7,7 @@ import RequestList from './RequestList';
 export default function AdminPanel({ user }) {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [time, setTime] = useState('');
 
   const fetchItems = async () => {
     const res = await API.get('/items');
@@ -23,6 +24,25 @@ export default function AdminPanel({ user }) {
     fetchCategories();
   }, []);
 
+  // Live time updater for IST (India)
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      const formattedTime = istTime.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true,
+      });
+      setTime(formattedTime);
+    };
+
+    updateTime(); // initial call
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -34,6 +54,11 @@ export default function AdminPanel({ user }) {
               Welcome, <span className="font-medium text-blue-600">{user.username}</span>
             </span>
           </h2>
+          
+          {/* Live Time at top right */}
+          <div className="text-right text-sm text-gray-600 font-mono mt-4 sm:mt-0">
+            🕒 IST Time: <span className="font-semibold">{time}</span>
+          </div>
         </div>
 
         {/* Section: Add Item & Category */}
@@ -49,7 +74,8 @@ export default function AdminPanel({ user }) {
         {/* Section: Item List */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">📦 Inventory Items</h3>
-          <ItemList items={items} />
+          <ItemList role={user.role} />
+
         </div>
 
         {/* Section: Requests */}

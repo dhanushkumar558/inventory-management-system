@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import API from '../api';
 
 export default function ItemForm({ fetchItems, fetchCategories, categories, role }) {
@@ -9,25 +10,41 @@ export default function ItemForm({ fetchItems, fetchCategories, categories, role
 
   const addItem = async () => {
     if (!name || !selectedCat || quantity === '') {
-      return alert('Fill all fields');
+      toast.error('Fill all fields');
+      return;
     }
 
-    await API.post(
-      '/items',
-      { name, category_id: selectedCat, quantity: parseInt(quantity) },
-      { headers: { role } }
-    );
-
-    setName('');
-    setQuantity('');
-    fetchItems();
+    try {
+      await API.post(
+        '/items',
+        { name, category_id: selectedCat, quantity: parseInt(quantity) },
+        { headers: { role } }
+      );
+      toast.success('Item added');
+      setName('');
+      setQuantity('');
+      fetchItems();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to add item');
+    }
   };
 
   const addCategory = async () => {
-    if (!catName) return alert('Category name required');
-    await API.post('/categories', { name: catName }, { headers: { role } });
-    setCatName('');
-    fetchCategories();
+    if (!catName) {
+      toast.error('Category name required');
+      return;
+    }
+
+    try {
+      await API.post('/categories', { name: catName }, { headers: { role } });
+      toast.success('Category added');
+      setCatName('');
+      fetchCategories();
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to add category');
+    }
   };
 
   return (

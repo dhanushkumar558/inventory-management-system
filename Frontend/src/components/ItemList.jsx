@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import API from '../api';
 
-export default function ItemList({ requestItem }) {
+export default function ItemList({ requestItem, role }) {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [quantityInputs, setQuantityInputs] = useState({}); // item.id -> quantity
+  const [quantityInputs, setQuantityInputs] = useState({});
+  const [stockEdits, setStockEdits] = useState({});
 
-  // Fetch all items (or by category)
   const fetchItems = async () => {
     const endpoint =
       selectedCategory === 'all'
@@ -17,7 +18,6 @@ export default function ItemList({ requestItem }) {
     setItems(res.data);
   };
 
-  // Fetch all categories for filter dropdown
   const fetchCategories = async () => {
     const res = await API.get('/categories');
     setCategories(res.data);
@@ -37,9 +37,52 @@ export default function ItemList({ requestItem }) {
 
   const handleRequest = (itemId) => {
     const quantity = parseInt(quantityInputs[itemId] || '1');
-    if (quantity < 1) return alert('Enter valid quantity');
-    requestItem(itemId, quantity); // call passed function with quantity
-    setQuantityInputs({ ...quantityInputs, [itemId]: '' }); // reset
+    if (quantity < 1) {
+      toast.error('Enter valid quantity');
+      return;
+    }
+    requestItem(itemId, quantity);
+    setQuantityInputs({ ...quantityInputs, [itemId]: '' });
+    toast.success('Item requested');
+  };
+
+  const handleStockEditChange = (itemId, value) => {
+    setStockEdits({ ...stockEdits, [itemId]: value });
+  };
+
+  const handleStockSave = async (itemId) => {
+    const newQty = parseInt(stockEdits[itemId]);
+    if (isNaN(newQty) || newQty < 0) {
+      toast.error('Enter a valid stock quantity');
+      return;
+    }
+
+    try {
+      await API.patch(`/items/${itemId}`, { quantity: newQty }, {
+        headers: { role },
+      });
+      toast.success('Quantity updated');
+      fetchItems(); // refresh items
+    } catch (error) {
+      console.error('Error updating stock:', error);
+      toast.error('Failed to update stock');
+    }
+  };
+
+  const handleDelete = async (itemId) => {
+    const confirm = window.confirm("Are you sure you want to delete this item?");
+    if (!confirm) return;
+
+    try {
+      await API.delete(`/items/${itemId}`, {
+        headers: { role },
+      });
+      toast.success('Item deleted');
+      fetchItems(); // refresh
+    } catch (err) {
+      console.error('Delete failed:', err);
+      toast.error('Failed to delete item');
+    }
   };
 
   return (
@@ -74,10 +117,37 @@ export default function ItemList({ requestItem }) {
               <div>
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">{item.name}</h3>
                 <p className="text-sm text-gray-500">Category: {item.category_name}</p>
-                <p className="text-sm text-gray-500">Quantity in Stock: {item.quantity}</p>
+
+                {role === 'admin' ? (
+                  <div className="mt-2">
+                    <label className="text-sm text-gray-600">Stock Quantity:</label>
+                    <input
+                      type="number"
+                      value={stockEdits[item.id] ?? item.quantity}
+                      onChange={(e) => handleStockEditChange(item.id, e.target.value)}
+                      className="mt-1 border rounded px-2 py-1 w-full text-sm"
+                    />
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => handleStockSave(item.id)}
+                        className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white text-sm py-1 px-3 rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 mt-2">Quantity in Stock: {item.quantity}</p>
+                )}
               </div>
 
-              {requestItem && (
+              {requestItem && role !== 'admin' && (
                 <div className="mt-4 space-y-2">
                   <input
                     type="number"
@@ -85,9 +155,7 @@ export default function ItemList({ requestItem }) {
                     placeholder="Qty"
                     className="w-full border rounded-md px-2 py-1 text-sm"
                     value={quantityInputs[item.id] || ''}
-                    onChange={(e) =>
-                      handleQuantityChange(item.id, e.target.value)
-                    }
+                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                   />
                   <button
                     onClick={() => handleRequest(item.id)}
