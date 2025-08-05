@@ -37,16 +37,20 @@ export default function ItemList({ requestItem, role, items, fetchItems }) {
   };
 
   const handleRequest = (itemId) => {
-    const quantity = parseInt(quantityInputs[itemId] || '1');
+    const input = quantityInputs[itemId] || {};
+    const quantity = parseInt(input.qty || '1');
+    const action = input.action || 'add';
+  
     if (quantity < 1) {
       toast.error('Enter valid quantity');
       return;
     }
-    requestItem(itemId, quantity);
-    setQuantityInputs({ ...quantityInputs, [itemId]: '' });
+  
+    requestItem(itemId, quantity, action);  // <- pass action too
+    setQuantityInputs({ ...quantityInputs, [itemId]: { qty: '', action: 'add' } });
     toast.success('Item requested');
   };
-
+  
   const handleStockEditChange = (itemId, value) => {
     setStockEdits({ ...stockEdits, [itemId]: value });
   };
@@ -161,20 +165,49 @@ export default function ItemList({ requestItem, role, items, fetchItems }) {
 
               {requestItem && role !== 'admin' && (
                 <div className="mt-4 space-y-2">
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="Qty"
-                    className="w-full border rounded-md px-2 py-1 text-sm"
-                    value={quantityInputs[item.id] || ''}
-                    onChange={(e) => handleQuantityChange(item.id, e.target.value)}
-                  />
-                  <button
-                    onClick={() => handleRequest(item.id)}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-2 rounded-md transition duration-200"
-                  >
-                    🛒 Request
-                  </button>
+                 <div className="flex gap-2">
+  <select
+    className="w-1/3 border rounded-md text-sm px-2 py-1"
+    value={(quantityInputs[item.id]?.action) || 'add'}
+    onChange={(e) =>
+      setQuantityInputs({
+        ...quantityInputs,
+        [item.id]: {
+          ...quantityInputs[item.id],
+          action: e.target.value
+        },
+      })
+    }
+  >
+    <option value="add">Add</option>
+    <option value="down">Down</option>
+  </select>
+
+  <input
+    type="number"
+    min="1"
+    placeholder="Qty"
+    className="w-2/3 border rounded-md px-2 py-1 text-sm"
+    value={quantityInputs[item.id]?.qty || ''}
+    onChange={(e) =>
+      setQuantityInputs({
+        ...quantityInputs,
+        [item.id]: {
+          ...quantityInputs[item.id],
+          qty: e.target.value
+        },
+      })
+    }
+  />
+</div>
+
+<button
+  onClick={() => handleRequest(item.id)}
+  className="w-full bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-2 rounded-md transition duration-200 mt-2"
+>
+  🛒 Request
+</button>
+
                 </div>
               )}
             </div>

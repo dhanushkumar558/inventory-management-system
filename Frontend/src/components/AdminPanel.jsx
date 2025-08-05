@@ -100,6 +100,7 @@ export default function AdminPanel({ user }) {
         <div className="bg-white shadow-md rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">📩 Item Requests</h3>
           <RequestList role={user.role} />
+          
         </div>
       </div>
     </div>

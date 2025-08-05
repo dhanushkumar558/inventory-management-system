@@ -78,6 +78,18 @@ export default function RequestList({ role }) {
     }
   };
 
+  const markAsCompleted = async (id) => {
+    try {
+      await API.patch(`/requests/${id}/complete`, {}, {
+        headers: { role },
+      });
+      fetchRequests(selectedCategory?.value || ''); // refresh list
+    } catch (err) {
+      console.error('Error marking request as completed', err);
+    }
+  };
+  
+
   const categoryOptions = [
     { value: '', label: 'All Categories' },
     ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
@@ -174,20 +186,39 @@ export default function RequestList({ role }) {
           <p className="text-gray-500 text-sm">No requests found.</p>
         ) : (
           <ul className="space-y-3">
-            {requests.map((req) => (
-              <li
-                key={req.id}
-                className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
-              >
-                <div className="text-gray-700">
-                  <span className="font-medium">{req.username}</span> requested
-                  <span className="font-semibold text-blue-600 mx-1">{req.item}</span>
-                  <span className="text-gray-500">(Qty: {req.quantity})</span>
-                </div>
+          {requests.map((req) => (
+            <li
+              key={req.id}
+              className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
+            >
+             <div className="text-gray-700">
+  <span className="font-medium">{req.username}</span> requested to{' '}
+  <span className={`font-semibold ${req.action === 'add' ? 'text-green-600' : 'text-red-600'}`}>
+    {req.action === 'add' ? 'Add' : 'Reduce'}
+  </span>{' '}
+  stock for <span className="font-semibold text-blue-600">{req.item}</span>
+  <span className="text-gray-500"> (Qty: {req.quantity})</span>
+  {req.status === 'completed' && (
+    <span className="text-green-600 ml-2 text-sm">(Completed)</span>
+  )}
+</div>
+
+        
+              <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-400">#ID: {req.id}</span>
-              </li>
-            ))}
-          </ul>
+        
+                {req.status !== 'completed' && (
+                  <button
+                    onClick={() => markAsCompleted(req.id)}
+                    className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                  >
+                    Mark Completed
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
         )}
       </div>
     </div>
