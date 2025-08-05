@@ -5,6 +5,7 @@ import ItemList from './ItemList';
 import RequestList from './RequestList';
 
 export default function AdminPanel({ user }) {
+  const [searchTerm, setSearchTerm] = useState('');
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [time, setTime] = useState('');
@@ -24,7 +25,7 @@ export default function AdminPanel({ user }) {
     fetchCategories();
   }, []);
 
-  // Live time updater for IST (India)
+  // Live IST clock
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -38,10 +39,15 @@ export default function AdminPanel({ user }) {
       setTime(formattedTime);
     };
 
-    updateTime(); // initial call
+    updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Filtered items based on search
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10">
@@ -54,14 +60,14 @@ export default function AdminPanel({ user }) {
               Welcome, <span className="font-medium text-blue-600">{user.username}</span>
             </span>
           </h2>
-          
-          {/* Live Time at top right */}
+
+          {/* Time */}
           <div className="text-right text-sm text-gray-600 font-mono mt-4 sm:mt-0">
-            🕒 IST Time: <span className="font-semibold">{time}</span>
+            🕒 Time: <span className="font-semibold">{time} IST</span>
           </div>
         </div>
 
-        {/* Section: Add Item & Category */}
+        {/* Form Section */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <ItemForm
             fetchItems={fetchItems}
@@ -71,14 +77,26 @@ export default function AdminPanel({ user }) {
           />
         </div>
 
-        {/* Section: Item List */}
+     
+
+        {/* Item List */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">📦 Inventory Items</h3>
-          <ItemList role={user.role} />
+                {/* Search bar */}
+                <input
+          type="text"
+          className="outline-none border-none focus:ring-0 px-2 py-1 text-sm mb-3 bg-transparent"
 
+          placeholder="Search items by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+          <ItemList role={user.role} items={filteredItems} fetchItems={fetchItems} />
         </div>
 
-        {/* Section: Requests */}
+     
+
+        {/* Request List */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">📩 Item Requests</h3>
           <RequestList role={user.role} />

@@ -1,12 +1,24 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import API from '../api';
+import Select from 'react-select';
 
 export default function ItemForm({ fetchItems, fetchCategories, categories, role }) {
+
+  
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [catName, setCatName] = useState('');
   const [selectedCat, setSelectedCat] = useState('');
+
+
+  const categoryOptions = [
+    { value: '', label: 'Select Category' },
+    ...categories.map((c) => ({
+      value: c.id,
+      label: c.name,
+    })),
+  ];
 
   const addItem = async () => {
     if (!name || !selectedCat || quantity === '') {
@@ -67,16 +79,36 @@ export default function ItemForm({ fetchItems, fetchCategories, categories, role
             placeholder="Quantity"
             min={0}
           />
-          <select
-            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-            value={selectedCat}
-            onChange={(e) => setSelectedCat(e.target.value)}
-          >
-            <option value="">Select Category</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+          <Select
+  className="w-full"
+  options={categoryOptions}
+  value={categoryOptions.find(opt => opt.value === selectedCat)}
+  onChange={(selected) => setSelectedCat(selected.value)}
+  styles={{
+    control: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',         // rounded-md
+      borderColor: '#d1d5db',         // Tailwind border-gray-300
+      padding: '2px',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: '#4ade80',       // Tailwind green-400 on hover
+      },
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',
+      overflow: 'hidden',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#f0fdf4' : '#fff',  // green-50 hover
+      color: '#111827', // text-gray-900
+      padding: '10px',
+      cursor: 'pointer',
+    }),
+  }}
+/>
           <button
             onClick={addItem}
             className="w-full bg-green-600 hover:bg-green-700 transition text-white font-medium py-2 rounded-md"

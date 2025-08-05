@@ -2,12 +2,19 @@ import { useEffect, useState } from 'react';
 import API from '../api';
 import ItemList from './ItemList';
 import RequestList from './RequestList';
+import Select from 'react-select';
 
 
 export default function EmployeePanel({ user }) {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selected, setSelected] = useState('');
+
+  const categoryOptions = [
+    { value: '', label: 'All Categories' },
+    ...categories.map((cat) => ({ value: cat.id, label: cat.name })),
+  ];
+  
 
   const fetchItems = async () => {
     const res = await API.get('/items', selected ? { params: { category_id: selected } } : {});
@@ -57,18 +64,39 @@ export default function EmployeePanel({ user }) {
           <label className="block mb-2 text-sm font-medium text-gray-700">
             Filter by Category
           </label>
-          <select
-            className="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
-            value={selected}
-            onChange={(e) => setSelected(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
+          <Select
+  className="w-60 text-sm"
+  options={categoryOptions}
+  value={categoryOptions.find(opt => opt.value === selected)}
+  onChange={(selectedOption) => setSelected(selectedOption.value)}
+  isSearchable
+  styles={{
+    control: (base, state) => ({
+      ...base,
+      borderRadius: '0.375rem', // rounded-md
+      borderColor: state.isFocused ? '#4ade80' : '#d1d5db', // green-400 or gray-300
+      boxShadow: state.isFocused ? '0 0 0 2px #bbf7d0' : 'none', // ring-green-400
+      padding: '2px 4px',
+      minHeight: '40px',
+      fontSize: '0.875rem',
+      '&:hover': {
+        borderColor: '#4ade80',
+      },
+    }),
+    menu: (base) => ({
+      ...base,
+      zIndex: 999,
+      borderRadius: '0.375rem',
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#f0fdf4' : '#fff',
+      color: '#111827',
+      fontSize: '0.875rem',
+      padding: '8px 12px',
+    }),
+  }}
+/>
         </div>
 
         {/* Item List */}

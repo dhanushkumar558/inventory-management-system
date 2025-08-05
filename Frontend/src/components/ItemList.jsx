@@ -1,35 +1,36 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import API from '../api';
+import Select from 'react-select';
 
-export default function ItemList({ requestItem, role }) {
-  const [items, setItems] = useState([]);
+export default function ItemList({ requestItem, role, items, fetchItems }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [filteredItems, setFilteredItems] = useState([]);
   const [quantityInputs, setQuantityInputs] = useState({});
   const [stockEdits, setStockEdits] = useState({});
 
-  const fetchItems = async () => {
-    const endpoint =
-      selectedCategory === 'all'
-        ? '/items'
-        : `/items?category_id=${selectedCategory}`;
-    const res = await API.get(endpoint);
-    setItems(res.data);
-  };
-
-  const fetchCategories = async () => {
-    const res = await API.get('/categories');
-    setCategories(res.data);
-  };
-
+  const categoryOptions = [
+    { value: 'all', label: 'Show All' },
+    ...categories.map(cat => ({ value: cat.id, label: cat.name })),
+  ];
+  // Fetch categories once
   useEffect(() => {
+    const fetchCategories = async () => {
+      const res = await API.get('/categories');
+      setCategories(res.data);
+    };
     fetchCategories();
   }, []);
 
+  // Filter items whenever items or category changes
   useEffect(() => {
-    fetchItems();
-  }, [selectedCategory]);
+    if (selectedCategory === 'all') {
+      setFilteredItems(items);
+    } else {
+      setFilteredItems(items.filter(item => item.category_id === parseInt(selectedCategory)));
+    }
+  }, [items, selectedCategory]);
 
   const handleQuantityChange = (itemId, value) => {
     setQuantityInputs({ ...quantityInputs, [itemId]: value });
@@ -88,28 +89,39 @@ export default function ItemList({ requestItem, role }) {
   return (
     <div className="space-y-6">
       {/* Filter Dropdown */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 mb-4">
         <label className="text-sm font-medium text-gray-700">Filter by Category:</label>
-        <select
-          className="border border-gray-300 p-2 rounded-md"
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-        >
-          <option value="all">Show All</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+        
+        <Select
+  className="w-44 text-sm"
+  classNamePrefix="react-select"
+  defaultValue={categoryOptions[0]}
+  onChange={(selected) => setSelectedCategory(selected.value)}
+  options={categoryOptions}
+  styles={{
+    control: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',
+      borderColor: '#d1d5db',
+      boxShadow: 'none',
+      padding: '2px',
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '0.5rem',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      zIndex: 20,
+    }),
+  }}
+/>
       </div>
 
       {/* Items List */}
-      {items.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <div className="text-gray-500 text-center py-10">🚫 No items available.</div>
       ) : (
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div
               key={item.id}
               className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition duration-300 p-5 flex flex-col justify-between"
