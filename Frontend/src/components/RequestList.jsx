@@ -97,9 +97,9 @@ export default function RequestList({ role }) {
 
   return (
     <div className="mt-12 px-4">
-      <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-6 relative">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
-          <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+      <div className="max-w-2x2 mx-auto bg-white shadow-lg rounded-xl p-6 relative">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4 ">
+          <h3 className="text-xl font-semibold text-gray-800 flex items-center gap-2  ">
             📄 Employee Requests
           </h3>
 
@@ -189,10 +189,10 @@ export default function RequestList({ role }) {
           {requests.map((req) => (
             <li
               key={req.id}
-              className="border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
+              className="border  border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition"
             >
              <div className="text-gray-700">
-  <span className="font-medium">{req.username}</span> requested to{' '}
+  <span className="font-medium">{req.username}</span> requested to Update{' '}
   <span className={`font-semibold ${req.action === 'add' ? 'text-green-600' : 'text-red-600'}`}>
     {req.action === 'add' ? 'Add' : 'Reduce'}
   </span>{' '}
