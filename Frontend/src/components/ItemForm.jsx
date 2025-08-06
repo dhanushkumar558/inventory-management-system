@@ -16,11 +16,11 @@ export default function ItemForm({ fetchItems, fetchCategories, categories, role
   }));
 
   const addItem = async () => {
-    if (!name || !selectedCat || quantity === '') {
-      toast.error('Fill all fields');
+    if (!name || !selectedCat || quantity === '' || parseInt(quantity) <= 0) {
+      toast.error('Please fill all fields and enter quantity > 0');
       return;
     }
-
+    
     try {
       await API.post(
         '/items',

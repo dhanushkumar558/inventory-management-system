@@ -38,9 +38,9 @@ export default function EmployeePanel({ user }) {
       { item_id, quantity, action, username: user.username },
       { headers: { role: user.role } }
     );
-    alert('✅ Requested successfully!');
+   
   } catch {
-    alert('❌ Request failed!');
+    
   }
 };
 

@@ -6,7 +6,8 @@ export default function Login({ onLogin }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Prevent default form submission (page reload)
     if (!username.trim() || !password.trim()) return alert("Please fill both fields.");
     setLoading(true);
     try {
@@ -21,7 +22,10 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white shadow-md rounded-xl w-full max-w-sm p-8 space-y-6">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white shadow-md rounded-xl w-full max-w-sm p-8 space-y-6"
+      >
         <h1 className="text-2xl font-bold text-center text-gray-800">🔐 Welcome Back</h1>
 
         <div className="space-y-2">
@@ -47,13 +51,13 @@ export default function Login({ onLogin }) {
         </div>
 
         <button
-          onClick={handleLogin}
+          type="submit"
           disabled={loading}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
-      </div>
+      </form>
     </div>
   );
 }
