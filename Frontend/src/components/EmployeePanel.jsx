@@ -58,80 +58,9 @@ export default function EmployeePanel({ user }) {
 
         {/* Action Selection */}
        {/* Action Dropdown */}
-<div className="bg-white shadow-md rounded-xl p-6">
-  <label className="block mb-2 text-sm font-medium text-gray-700">Select Action</label>
-  <Select
-    className="w-60 text-sm"
-    options={[
-      { value: 'add', label: 'Add Stock' },
-      { value: 'reduce', label: 'Reduce Stock' },
-    ]}
-    value={{ value: action, label: action === 'add' ? 'Add Stock' : 'Reduce Stock' }}
-    onChange={(selectedOption) => setAction(selectedOption.value)}
-    styles={{
-      control: (base) => ({
-        ...base,
-        borderRadius: '0.375rem',
-        borderColor: '#d1d5db',
-        boxShadow: 'none',
-        padding: '2px 4px',
-        minHeight: '40px',
-        fontSize: '0.875rem',
-        '&:hover': {
-          borderColor: '#4ade80',
-        },
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isFocused ? '#f0fdf4' : '#fff',
-        color: '#111827',
-        fontSize: '0.875rem',
-        padding: '8px 12px',
-      }),
-    }}
-  />
-</div>
 
 
-        {/* Category Filter */}
-        <div className="bg-white shadow-md rounded-xl p-6">
-          <label className="block mb-2 text-sm font-medium text-gray-700">
-            Filter by Category
-          </label>
-          <Select
-            className="w-60 text-sm"
-            options={categoryOptions}
-            value={categoryOptions.find((opt) => opt.value === selected)}
-            onChange={(selectedOption) => setSelected(selectedOption.value)}
-            isSearchable
-            styles={{
-              control: (base, state) => ({
-                ...base,
-                borderRadius: '0.375rem',
-                borderColor: state.isFocused ? '#4ade80' : '#d1d5db',
-                boxShadow: state.isFocused ? '0 0 0 2px #bbf7d0' : 'none',
-                padding: '2px 4px',
-                minHeight: '40px',
-                fontSize: '0.875rem',
-                '&:hover': {
-                  borderColor: '#4ade80',
-                },
-              }),
-              menu: (base) => ({
-                ...base,
-                zIndex: 999,
-                borderRadius: '0.375rem',
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused ? '#f0fdf4' : '#fff',
-                color: '#111827',
-                fontSize: '0.875rem',
-                padding: '8px 12px',
-              }),
-            }}
-          />
-        </div>
+
 
         {/* Item List */}
         <div className="bg-white shadow-md rounded-xl p-6">

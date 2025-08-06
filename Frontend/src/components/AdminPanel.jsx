@@ -70,8 +70,9 @@ export default function AdminPanel({ user }) {
         {/* Form Section */}
         <div className="bg-white shadow-md rounded-xl p-6">
           <ItemForm
+          fetchCategories={fetchCategories}
             fetchItems={fetchItems}
-            fetchCategories={fetchCategories}
+            
             categories={categories}
             role={user.role}
           />

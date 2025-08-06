@@ -180,7 +180,7 @@ export default function ItemList({ requestItem, role, items, fetchItems }) {
     }
   >
     <option value="add">Add</option>
-    <option value="down">Down</option>
+    <option value="Delete">Delete</option>
   </select>
 
   <input

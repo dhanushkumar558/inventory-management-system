@@ -194,7 +194,7 @@ export default function RequestList({ role }) {
              <div className="text-gray-700">
   <span className="font-medium">{req.username}</span> requested to Update{' '}
   <span className={`font-semibold ${req.action === 'add' ? 'text-green-600' : 'text-red-600'}`}>
-    {req.action === 'add' ? 'Add' : 'Reduce'}
+    {req.action === 'add' ? 'Add' : 'Delete'}
   </span>{' '}
   stock for <span className="font-semibold text-blue-600">{req.item}</span>
   <span className="text-gray-500"> (Qty: {req.quantity})</span>
