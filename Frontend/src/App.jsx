@@ -5,6 +5,7 @@ import EmployeePanel from './components/EmployeePanel';
 import Navbar from './components/Navbar';
 import { Toaster } from 'react-hot-toast';
 
+
 export default function App() {
   const [user, setUser] = useState(null);
 
@@ -29,7 +30,7 @@ export default function App() {
 
   return (
     <div>
-        <Toaster position="top-right" reverseOrder={false} />
+        <Toaster position="top-center" reverseOrder={false} />
       <Navbar user={user} onLogout={handleLogout} />
       {user.role === 'admin' && <AdminPanel user={user} />}
       {user.role === 'employee' && <EmployeePanel user={user} />}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import API from '../api';
+import { toast } from 'react-hot-toast';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
@@ -7,18 +8,28 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent default form submission (page reload)
-    if (!username.trim() || !password.trim()) return alert("Please fill both fields.");
+    e.preventDefault();
+    if (!username.trim() || !password.trim()) {
+      toast.error("Please fill both fields.");
+      return;
+    }
+  
     setLoading(true);
     try {
       const res = await API.post('/login', { username, password });
       onLogin(res.data);
+      toast.success("Login successful");
     } catch (err) {
-      alert('Login failed. Invalid credentials.');
-    } finally {
+      console.log("Login error:", err);
+      console.log("Error response:", err.response);
+      const msg = err.response?.data?.error || 'Login failed. Invalid credentials.';
+      toast.error(msg);
+    }
+     finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
