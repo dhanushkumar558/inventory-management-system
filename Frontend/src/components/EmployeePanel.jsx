@@ -9,6 +9,7 @@ export default function EmployeePanel({ user }) {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selected, setSelected] = useState('');
+  const [time, setTime] = useState('');
 
   const categoryOptions = [
     { value: '', label: 'All Categories' },
@@ -43,18 +44,41 @@ export default function EmployeePanel({ user }) {
   }
 };
 
+useEffect(() => {
+  const updateTime = () => {
+    const now = new Date();
+    const istTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+    const formattedTime = istTime.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true,
+    });
+    setTime(formattedTime);
+  };
+
+  updateTime();
+  const interval = setInterval(updateTime, 1000);
+  return () => clearInterval(interval);
+}, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6 md:p-10">
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <h2 className="text-3xl font-semibold text-gray-800">
-            👤 Employee Panel
-            <span className="block sm:inline text-lg font-normal text-gray-500 ml-1">
+            👤 Employee Panel 
+            &nbsp;<span className="block sm:inline text-lg font-normal text-gray-500 ml-1">
               Welcome, <span className="font-medium text-green-600">{user.username}</span>
             </span>
           </h2>
+          <div className="text-right text-sm text-gray-600 font-mono mt-4 sm:mt-0">
+            🕒 Time: <span className="font-semibold">{time} IST</span>
+          </div>
         </div>
+
+      
 
         {/* Action Selection */}
        {/* Action Dropdown */}

@@ -56,6 +56,7 @@ export default function AdminPanel({ user }) {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <h2 className="text-3xl font-semibold text-gray-800">
             👑 Admin Panel
+            &nbsp;
             <span className="block sm:inline text-lg font-normal text-gray-500 ml-1">
               Welcome, <span className="font-medium text-blue-600">{user.username}</span>
             </span>

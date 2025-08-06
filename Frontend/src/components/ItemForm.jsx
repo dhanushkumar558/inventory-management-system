@@ -77,7 +77,7 @@ export default function ItemForm({ fetchItems, fetchCategories, categories, role
             <h3 className="text-lg font-semibold text-gray-800 mb-2">🗃️ Available Categories</h3>
             <Select
               className="w-full pt-2 text-sm"
-              placeholder=" Browse Available Categories"
+              placeholder="List Available Categories"
               options={categoryOptions}
               value={categoryOptions.find(opt => opt.value === viewCat) || null}
               onChange={(selected) => setViewCat(selected?.value)}

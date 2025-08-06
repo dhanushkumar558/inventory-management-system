@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 
+router.get('/', (req, res) => {
+  res.send('Inventory backend is running.');
+});
+
 
 // Login (Mock)
 // POST /auth/login
@@ -68,10 +72,10 @@ router.get('/categories', async (req, res) => {
 // Employee: Request item
 // Employee: Request item
 router.post('/requests', auth('employee'), async (req, res) => {
-    const { item_id, username, quantity } = req.body;
+    const { item_id, username, quantity,action } = req.body;
     await db.query(
-      'INSERT INTO requests(item_id, username, quantity) VALUES($1, $2, $3)',
-      [item_id, username, quantity]
+      'INSERT INTO requests(item_id, username, quantity,action) VALUES($1, $2, $3, $4)',
+      [item_id, username, quantity,action]
     );
     res.send('Request placed');
   });
@@ -80,15 +84,25 @@ router.post('/requests', auth('employee'), async (req, res) => {
 // Admin: View requests
 // Admin: View requests
 router.get('/requests', auth('admin'), async (req, res) => {
-    const data = await db.query(
-      `SELECT r.id, i.name AS item, r.username, r.quantity
-       FROM requests r
-       JOIN items i ON r.item_id = i.id`
-    );
-    res.json(data.rows);
-  });
+  let query = `
+    SELECT r.id, i.name AS item, r.username, r.quantity, r.action, i.category_id, r.status
+    FROM requests r
+    JOIN items i ON r.item_id = i.id
+  `;
 
-  // PATCH /items/:id — Update quantity (admin only)
+  const { category_id } = req.query;
+  if (category_id) {
+    query += ` WHERE i.category_id = ${category_id}`;
+  }
+
+  query += ' ORDER BY r.id DESC';
+
+  const { rows } = await db.query(query);
+  res.json(rows);
+});
+
+
+// PATCH /items/:id — Update quantity (admin only)
 router.patch('/items/:id', auth('admin'), async (req, res) => {
   const { quantity } = req.body;
   const itemId = req.params.id;
@@ -114,6 +128,39 @@ router.delete('/items/:id', auth('admin'), async (req, res) => {
     res.status(500).send('Error deleting item');
   }
 });
+
+// PATCH /requests/:id/complete
+router.patch('/requests/:id/complete', auth('admin'), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await db.query(
+      'UPDATE requests SET status = $1 WHERE id = $2',
+      ['completed', id]
+    );
+    res.send('Request marked as completed');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating request status');
+  }
+});
+
+router.post('/stock-updates', auth('employee'), async (req, res) => {
+  const { item_id, requested_quantity, username } = req.body;
+
+  try {
+    await db.query(
+      'INSERT INTO stock_update_requests (item_id, requested_quantity, username) VALUES ($1, $2, $3)',
+      [item_id, requested_quantity, username]
+    );
+    res.send('Stock update request submitted');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error submitting stock update request');
+  }
+});
+
+
 
   
 
