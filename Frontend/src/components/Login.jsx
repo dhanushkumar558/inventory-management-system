@@ -30,12 +30,12 @@ export default function Login({ onLogin }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="flex flex-col md:flex-row gap-8 items-start max-w-5xl w-full">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-8 max-w-4xl w-full justify-center">
         
         {/* Login Form */}
         <form
           onSubmit={handleLogin}
-          className="bg-white shadow-md rounded-xl w-full max-w-sm p-8 space-y-6 flex-1"
+          className="bg-white shadow-md rounded-xl w-full max-w-sm p-8 space-y-6"
         >
           <h1 className="text-2xl font-bold text-center text-gray-800">🔐 Welcome Back</h1>
 
@@ -71,7 +71,7 @@ export default function Login({ onLogin }) {
         </form>
 
         {/* Side Info Box */}
-        <div className="bg-white shadow-md rounded-xl p-6 w-full md:w-72">
+        <div className="bg-white shadow-md rounded-xl p-6 w-full max-w-sm">
           <h2 className="text-lg font-bold mb-4 text-gray-800">📢 Login Info</h2>
           
           <div className="mb-4 p-4 border rounded-md bg-gray-50">
