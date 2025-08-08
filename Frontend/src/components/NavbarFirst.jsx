@@ -5,7 +5,7 @@ export default function NavbarFirst(){
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex items-center justify-start">
   <span className="text-2xl font-bold text-blue-600 tracking-wide">
-    Stocify
+    Stockify
   </span>
 </div>
 
