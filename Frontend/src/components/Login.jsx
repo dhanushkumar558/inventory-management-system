@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import API from '../api';
 import { toast } from 'react-hot-toast';
+import Navbar from './Navbar';
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState('');
