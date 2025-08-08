@@ -29,6 +29,8 @@ export default function Login({ onLogin }) {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-8 max-w-4xl w-full justify-center">
         
@@ -89,5 +91,6 @@ export default function Login({ onLogin }) {
 
       </div>
     </div>
+    </>
   );
 }
